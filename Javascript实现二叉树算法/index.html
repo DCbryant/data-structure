@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        // 排序二叉树
+        function BinaryTree(){
+            var Node = function(key){
+                this.key = key
+                this.left = null
+                this.right = null
+            }
+            var root = null
+            var insertNode = function(node,newNode){
+                if(newNode.key < node.key){
+                    if(node.left === null){
+                        node.left = newNode
+                    }else{
+                        insertNode(node.left,newNode)
+                    }
+                }else{
+                    if(node.right === null){
+                        node.right = newNode
+                    }else{
+                        insertNode(node.right,newNode)
+                    }
+                }
+            }
+            this.insert = function(key){
+                var newNode = new Node(key)
+                if(root === null){
+                    root = newNode
+                }else{
+                    insertNode(root,newNode)
+                }
+            }
+        
+            // 中序遍历:可以从小到大的排序
+            // 遍历左边，遍历自身，遍历右边
+            var inOrderTraverseNode = function(node,cb){
+                if(node !== null){
+                    inOrderTraverseNode(node.left,cb)
+                    cb(node.key)
+                    inOrderTraverseNode(node.right,cb)
+                }
+            }
+            this.inOrderTraverse = function(cb){
+                inOrderTraverseNode(root,cb)
+            }
+        
+            // 前序遍历:可以应用于复制一个节点
+            // 遍历自身，遍历左边，遍历右边
+            var preOrderTraverseNode = function(node,cb){
+                if(node !== null){
+                    cb(node.key)
+                    preOrderTraverseNode(node.left,cb)
+                    preOrderTraverseNode(node.right,cb)
+                }
+            }
+            this.preOrderTraverse = function(cb){
+                preOrderTraverseNode(root,cb)
+            }
+
+            // 后序遍历:可以应用于访问文件夹
+            // 遍历左边，遍历右边，遍历自身
+            var postOrderTraverseNode = function(node,cb){
+                if(node !== null){
+                    postOrderTraverseNode(node.left,cb)
+                    postOrderTraverseNode(node.right,cb)
+                    cb(node.key)
+                }
+            }
+            this.postOrderTraverse = function(cb){
+                postOrderTraverseNode(root,cb)
+            }
+
+            // 一直查找左节点，就找到了最小值
+            var minNode = function(node){
+                if(node){
+                    while(node && node.left !== null){
+                        node = node.left
+                    }
+                    return node.key
+                }
+                return null
+            }
+            this.min = function(){
+                return minNode(root)
+            }
+            // 一直查找右节点，就找到了最大值
+            var maxNode = function(node){
+                if(node){
+                    while(node && node.right !== null){
+                        node = node.right
+                    }
+                    return node.key
+                }
+                return null
+            }
+            this.max = function(){
+                return maxNode(root)
+            }
+            
+            // 若寻找的节点大于当前节点，就寻找当前节点的右节点
+            // 若寻找的节点小于当前节点，就寻找当前节点的左节点
+            var searchNode = function(node,key){
+                if(node === null){
+                    return false
+                }
+                if(key < node.key){
+                    return searchNode(node.left,key)
+                }else if(key > node.key){
+                    return searchNode(node.right,key)
+                }else{
+                    return true
+                }
+            }
+            this.search = function(key){
+                return searchNode(root,key)
+            }
+
+            var findMinNode = function(node){
+                if(node){
+                    while(node && node.left !== null){
+                        node = node.left
+                    }
+                    return node
+                }
+                return null
+            }
+
+            // 删除节点
+            var removeNode = function(node,key){
+                if(node === null){
+                    return null
+                }
+                if(key < node.key){
+                    node.left = removeNode(node.left,key)
+                    return node
+                }else if(key > node.key){
+                    node.right = removeNode(node.right,key)
+                    return node
+                }else{
+                    //删除叶子节点，即是该节点没有左节点、右节点，处于最下层
+                    if(node.left === null && node.right === null){
+                        node = null
+                        return node
+                    }
+                    // 若删除的节点有右孩子，将当前节点的右孩子指向当前节点的父节点
+                    if(node.left === null){
+                        node = node.right
+                        return node
+                    }
+                    // 若删除的节点有左孩子，将当前节点的左孩子指向当前节点的父节点
+                    if(node.right === null){
+                        node = node.left
+                        return node
+                    }
+
+                    //被删除的节点有两个孩子节点
+                    // 找到当前节点的右孩子中的最小节点
+                    var aux = findMinNode(node.right)
+                    // 将当前的值替换为找到的最小节点(为了使之成为一个搜索二叉树)
+                    node.key = aux.key
+                    // 删除那个最小节点
+                    node.right = removeNode(node.right,aux.key)
+                    return node
+                }
+            }
+            this.remove = function(key){
+                root = removeNode(root,key)
+            }
+        }
+        
+        var nodes = [8,3,10,1,6,14,4,7,13]
+        var binaryTree = new BinaryTree()
+        nodes.forEach(function(key){
+            binaryTree.insert(key)
+        })
+        
+        
+        
+        var cb = function(key){
+            console.log(key)
+        }
+        // binaryTree.inOrderTraverse(cb)
+        // binaryTree.preOrderTraverse(cb)
+        binaryTree.postOrderTraverse(cb)
+        console.log('minNode is ' + binaryTree.min()) //minNode is 1
+        console.log('maxNode is ' + binaryTree.max()) //minNode is 14
+        console.log(binaryTree.search(7) ? 'key7 is found' : 'key7 is not found') //minNode is 1
+        console.log(binaryTree.search(15) ? 'key15 is found' : 'key15 is not found') //minNode is 1
+        
+    </script>
+</body>
+</html>
