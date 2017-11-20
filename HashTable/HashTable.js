@@ -1,3 +1,4 @@
+
 class HashTable{
     constructor(){
         this.table = []
@@ -27,5 +28,9 @@ class HashTable{
     remove(key){
         this.table[HashTable.loseloseHashCode(key)] = undefined
     }
+
 }
+
+
+
 module.exports = HashTable
